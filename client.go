@@ -1,4 +1,4 @@
-package spinwriter
+package spinrewriter
 
 import (
 	"encoding/json"
@@ -8,7 +8,7 @@ import (
 	"strings"
 )
 
-var baseUrl = "https://www.spinwriter.com/action/api"
+var baseUrl = "https://www.spinrewriter.com/action/api"
 
 type Status string
 

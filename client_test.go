@@ -1,14 +1,39 @@
-package spinwriter_test
+package spinrewriter_test
 
 import (
-	"api/spinwriter"
+	"log"
+	"os"
 	"testing"
+
+	"github.com/timo972/spinrewriter"
 )
 
 func TestNew(t *testing.T) {
-	client := spinwriter.New("email", "api_key")
+	client := spinrewriter.New("email", "api_key")
 
 	if client == nil {
-		t.Error("Expected client to be instance of spinwriter.Client")
+		t.Error("Expected client to be instance of spinrewriter.Client")
 	}
+}
+
+func ExampleClient_Quota() {
+	client := spinrewriter.New(os.Getenv("spinrewriter_EMAIL"), os.Getenv("spinrewriter_API_KEY"))
+
+	quota, err := client.Quota()
+	if err != nil {
+		log.Fatalln(err)
+	}
+
+	log.Printf("Quota: %s", quota)
+}
+
+func ExampleClient_Spintax() {
+	client := spinrewriter.New(os.Getenv("spinrewriter_EMAIL"), os.Getenv("spinrewriter_API_KEY"))
+
+	spintax, err := client.Spintax("This is a {sentence|phrase}.")
+	if err != nil {
+		log.Fatalln(err)
+	}
+
+	log.Printf("Text options: %d", spintax.NumOptions())
 }

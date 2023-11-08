@@ -1,4 +1,4 @@
-package spinwriter
+package spinrewriter
 
 import "strings"
 

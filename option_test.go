@@ -1,3 +1,3 @@
-package spinwriter_test
+package spinrewriter_test
 
 // TODO:
