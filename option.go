@@ -16,7 +16,7 @@ type Option struct {
 }
 
 // Your original text that you wish to rewrite or spin. This text will be analyzed by our software, its meaning will be extracted, and Spin Rewriter will rewrite it with synonyms for individual words and phrases.
-func WithText(text string) Option {
+func withText(text string) Option {
 	return Option{
 		Key:   "text",
 		Value: text,

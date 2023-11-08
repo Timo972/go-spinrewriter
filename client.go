@@ -77,7 +77,7 @@ func (c *Client) Quota() (string, error) {
 
 // returns the processed spun text with spintax
 func (c *Client) Spintax(text string, options ...Option) (*Spintax, error) {
-	raw, err := c.makeRequest("text_with_spintax", append(options, WithText(text)))
+	raw, err := c.makeRequest("text_with_spintax", append(options, withText(text)))
 	if err != nil {
 		return nil, err
 	}
@@ -87,10 +87,10 @@ func (c *Client) Spintax(text string, options ...Option) (*Spintax, error) {
 
 // returns a unique variation of processed given text
 func (c *Client) UniqueVariation(text string, options ...Option) (string, error) {
-	return c.makeRequest("unique_variation", append(options, WithText(text)))
+	return c.makeRequest("unique_variation", append(options, withText(text)))
 }
 
 // returns a unique variation of already spun text
 func (c *Client) UniqueSpintaxVariation(text string, options ...Option) (string, error) {
-	return c.makeRequest("unique_variation_from_spintax", append(options, WithText(text)))
+	return c.makeRequest("unique_variation_from_spintax", append(options, withText(text)))
 }
