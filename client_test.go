@@ -30,7 +30,8 @@ func ExampleClient_Quota() {
 func ExampleClient_Spintax() {
 	client := spinrewriter.New(os.Getenv("spinrewriter_EMAIL"), os.Getenv("spinrewriter_API_KEY"))
 
-	spintax, err := client.Spintax("This is a {sentence|phrase}.")
+	// Spin text with protected terms
+	spintax, err := client.Spintax("This is a seo sentence. Keep this tag.", spinrewriter.WithProtectedTerms("seo", "this"))
 	if err != nil {
 		log.Fatalln(err)
 	}
