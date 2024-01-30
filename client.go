@@ -18,12 +18,17 @@ const (
 )
 
 type Resp struct {
-	Status            Status     `json:"status"`
-	RequestsMade      int        `json:"api_requests_made"`
-	RequestsAvailable int        `json:"api_requests_available"`
-	ProtectedTerms    []string   `json:"protected_terms"`
-	ConfidenceLevel   Confidence `json:"confidence_level"`
-	Data              string     `json:"response"`
+	Status          Status     `json:"status"`
+	ReqsMade        int        `json:"api_requests_made"`
+	ReqsAvailable   int        `json:"api_requests_available"`
+	ProtectedTerms  string     `json:"protected_terms"`
+	ConfidenceLevel Confidence `json:"confidence_level"`
+	Data            string     `json:"response"`
+}
+
+type Quota struct {
+	ReqsMade      int
+	ReqsAvailable int
 }
 
 type Client struct {
@@ -40,7 +45,7 @@ func New(email string, apiKey string) *Client {
 	}
 }
 
-func (c *Client) makeRequest(action string, options []Option) (string, error) {
+func (c *Client) makeRequest(action string, options []Option) (*Resp, error) {
 	body := url.Values{}
 	body.Set("email_address", c.email)
 	body.Set("api_key", c.apiKey)
@@ -54,43 +59,61 @@ func (c *Client) makeRequest(action string, options []Option) (string, error) {
 
 	resp, err := c.HTTP.Post(baseUrl, "application/x-www-form-urlencoded", strings.NewReader(body.Encode()))
 	if err != nil {
-		return "", err
+		return nil, err
 	}
 	defer resp.Body.Close()
 
 	var data Resp
 	if err := json.NewDecoder(resp.Body).Decode(&data); err != nil {
-		return "", err
+		return nil, err
 	}
 
 	if data.Status != OK {
-		return "", errors.New(data.Data)
+		return nil, errors.New(data.Data)
 	}
 
-	return data.Data, nil
+	return &data, nil
 }
 
 // returns the number of made and remaining API calls for the 24-hour period
-func (c *Client) Quota() (string, error) {
-	return c.makeRequest("api_quota", nil)
-}
-
-// returns the processed spun text with spintax
-func (c *Client) Spintax(text string, options ...Option) (*Spintax, error) {
-	raw, err := c.makeRequest("text_with_spintax", append(options, withText(text)))
+func (c *Client) Quota() (*Quota, error) {
+	resp, err := c.makeRequest("api_quota", nil)
 	if err != nil {
 		return nil, err
 	}
 
-	return NewSpintax(raw, SpintaxFormat(optionValue(options, "spintax_format", SpintaxFormatPipeBraces.String()))), nil
+	return &Quota{
+		ReqsMade:      resp.ReqsMade,
+		ReqsAvailable: resp.ReqsAvailable,
+	}, nil
+}
+
+// returns the processed spun text with spintax
+func (c *Client) Spintax(text string, options ...Option) (*Spintax, error) {
+	resp, err := c.makeRequest("text_with_spintax", append(options, withText(text)))
+	if err != nil {
+		return nil, err
+	}
+
+	return NewSpintax(resp.Data, SpintaxFormat(optionValue(options, "spintax_format", FormatPipeBraces.String())), resp.ReqsMade, resp.ReqsAvailable), nil
 }
 
 // returns a unique variation of processed given text
 func (c *Client) UniqueVariation(text string, options ...Option) (string, error) {
-	return c.makeRequest("unique_variation", append(options, withText(text)))
+	resp, err := c.makeRequest("unique_variation", append(options, withText(text)))
+	if err != nil {
+		return "", err
+	}
+
+	return resp.Data, nil
 }
 
 // returns a unique variation of already spun text
-func (c *Client) UniqueSpintaxVariation(text string, options ...Option) (string, error) {
-	return c.makeRequest("unique_variation_from_spintax", append(options, withText(text)))
+func (c *Client) UniqueSpintaxVariation(spintax *Spintax, options ...Option) (string, error) {
+	resp, err := c.makeRequest("unique_variation_from_spintax", append(options, withText(spintax.String())))
+	if err != nil {
+		return "", err
+	}
+
+	return resp.Data, nil
 }

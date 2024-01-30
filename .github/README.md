@@ -3,6 +3,14 @@
 A minimalistic but fully featured go client for the spinrewriter AI API.  
 Currently in an experimental state, the package will soon be battle tested and hopefully proven as stable.
 
+**API Stability**
+- ✅ Quota
+- ✅ Spintax
+- 🚧 UniqueVariation
+- 🚧 UniqueSpintaxVariation
+
+> ✅ = Tested 🚧 = Untested
+
 ## ⚡️ Quickstart
 
 ```go
