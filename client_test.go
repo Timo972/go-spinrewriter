@@ -7,7 +7,7 @@ import (
 	"testing"
 
 	"github.com/joho/godotenv"
-	"github.com/timo972/spinrewriter"
+	"github.com/timo972/go-spinrewriter"
 )
 
 func TestMain(m *testing.M) {
