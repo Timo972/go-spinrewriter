@@ -1,4 +1,4 @@
-module github.com/timo972/spinrewriter
+module github.com/timo972/go-spinrewriter
 
 go 1.19
 
